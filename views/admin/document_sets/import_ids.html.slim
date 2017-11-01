@@ -1,0 +1,11 @@
+/f.semantic_errors *f.object.errors.keys
+h2 Importing Document Set IDs
+= form_for :csv, :url => {:action => "import_ids"}, :html => {:multipart => true} do |f|
+  fieldset.inputs
+    ol
+      li.input
+        label.label for='csv_file'
+          | Select a CSV File to import:
+        = f.file_field :file
+  fieldset.actions
+    = submit_tag 'Upload'

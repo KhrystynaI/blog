@@ -1,0 +1,82 @@
+- results = local_assigns[:results]
+- user = local_assigns[:user]
+- import_date = local_assigns[:import_date]
+- duration = local_assigns[:duration]
+- failures = results.select{ |r| r.status == 'fail' }
+
+| Imported by #{user.display_name} on #{import_date}
+br
+= results.count
+|  records(s) total. #{failures.count} failure(s).
+
+.import-results
+
+p
+
+= link_to 'Back to Reports List', admin_import_reports_path
+
+javascript:
+  $(function () {
+    $(".import-results").jsGrid({
+      height: "320px",
+      width: "100%",
+      filtering: true,
+      inserting: false,
+      editing: false,
+      sorting: false,
+      paging: false,
+      autoload: true,
+      noDataContent: 'No results found. Try to change the filter.',
+      pageSize: 6,
+      pageButtonCount: 5,
+      onInit: function (args) {
+        gridInstance = args.grid;
+        //..
+      },
+      onDataLoaded: function (data) {
+      },
+      controller: {
+        loadData: function (filter) {
+          return $.ajax({
+            type: "GET",
+            url: "#{json_admin_import_report_path(resource)}",
+            data: filter
+          });
+        }
+      },
+      rowRenderer: function (result) {
+        var data = $("<tr>")
+                .append($("<td style='width: 50px;'>").text(result.record.line_number))
+                .append($("<td style='width: 70px;'>").text(result.record.status))
+                .append($("<td style='width: 100px;'>").text(result.record.title))
+                .append($("<td style='width: 50px;'>").text(result.record.doc_id))
+                .append($("<td style='width: 50px;'>").text(result.record.version))
+                .append($("<td style='width: 50px;'>").text(result.record.order_id))
+                .append($("<td style='width: 70px;'>").text(result.record.expiry_date))
+                .append($("<td style='width: 70px;'>").text(result.record.brid))
+                .append($("<td style='width: 100px;'>").text(result.record.subscriber_first_name))
+                .append($("<td style='width: 100px;'>").text(result.record.subscriber_last_name))
+                .append($("<td>").text(result.record.address));
+        var log = $("<tr>")
+                .append($("<td colspan='9'>").text(result.record.logs));
+
+        return data;
+      },
+      fields: [
+        {name: "line_no", type: "text", title: 'Line No', width: 50},
+        {
+          name: "status", width: 70, title: 'Status',
+          type: "select", items: ['', 'Success', 'Fail', 'Sckipped']
+        },
+        {name: "title", type: "text", title: 'Title', width: 100},
+        {name: "doc_set_id", type: "text", title: 'Doc Set ID', width: 50},
+        {name: "version", type: "text", title: 'Version', width: 50},
+        {name: "order_id", type: "text", title: 'Order ID', width: 50},
+        {name: "expiry_date", type: "text", title: 'Expiry Date', width: 70},
+        {name: "employee_id", type: "text", title: 'Employee ID', width: 70},
+        {name: "first_name", type: "text", title: 'First Name', width: 100},
+        {name: "last_name", type: "text", title: 'Last Name', width: 100},
+        {name: "address", type: "text", title: 'Address'}
+      ]
+    });
+  });

@@ -1,0 +1,58 @@
+= link_to ' New Request', '#', :class => "mail-us-dialog"
+.reveal-modal.small aria-hidden="true" aria-labelledby="modalTitle" role="dialog" id="mail-us-dialog" data-reveal=true
+  div
+    h4 Publisher name and contact details
+    | Name:
+    =text_field_tag :name
+    | Email:
+    =email_field_tag :email
+    | Phone:
+    =phone_field_tag :phone
+    h4 Publication details
+    | Publication Title
+    =text_field_tag :publication_title
+    | Contract owner (the person who will sign the contract with the publisher)
+    =text_field_tag :contract_owner
+    | Subscriber name(s)
+    =text_field_tag :subscriber_name
+    |  Subscriber work address inc. country
+    =text_area_tag :subscriber_address
+    | Format (print, electronic, etc.)
+    =text_field_tag :format
+    | Type of subscription (single user/multiple users/enterprise or site)
+    =select_tag "subscription_type",
+                options_for_select([ "Single user", "Multiple users", "Enterprise", "Site" ],
+                                   "Single user")
+  br
+  =link_to 'Make Request', "#" ,class: "make-mail-to button small"
+  a.close-reveal-modal aria-label="Close" &#215;
+javascript:
+  $(document).ready(function () {
+    var class_edit_link = ".mail-us-dialog";
+    var id_dialog = "#mail-us-dialog";
+    $(class_edit_link).click(function () {
+      $(id_dialog).foundation("reveal", "open");
+    });
+    $('.make-mail-to').click(function () {
+      $(id_dialog).foundation("reveal", "close");
+      var mail_body = CreateMailBody();
+      window.location.href = "mailto:customerservice@contractscomplete.com?subject=New%20One%20Page%20Summary%20Request" + "&body=" + mail_body;
+    });
+    function CreateMailBody() {
+      var text = '';
+      text += 'Publisher name and contact details:'+ '%0D%0A';
+      text += 'Name: ' + document.getElementById('name').value + '%0D%0A';
+      text += 'Email: ' + document.getElementById('email').value + '%0D%0A';
+      text += 'Phone: ' + document.getElementById('phone').value + '%0D%0A';
+      text += 'Publication details:'+ '%0D%0A';
+      text += 'Publication Title: ' + document.getElementById('publication_title').value + '%0D%0A';
+      text += 'Contract owner: ' + document.getElementById('contract_owner').value + '%0D%0A';
+      text += 'Subscriber name(s): ' + document.getElementById('subscriber_name').value + '%0D%0A';
+      text += 'Subscriber work address: ' + document.getElementById('subscriber_address').value + '%0D%0A';
+      text += 'Format: ' + document.getElementById('format').value + '%0D%0A';
+      text += 'Type of subscription: ' + document.getElementById('subscription_type').value + '%0D%0A';
+      text += '%0D%0A';
+      text += "Please don't forget to attach any order form or Terms and Conditions if you have them!";
+      return text;
+    }
+  });

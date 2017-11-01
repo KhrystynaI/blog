@@ -1,0 +1,16 @@
+h2 Import documents/files
+
+= link_to 'Read more about Importing Files',
+        page_path('admin/import/files'), target: '_blank', class: 'kb-link'
+br
+br
+
+= form_for :document, :url => {:action => "import"}, :html => {:multipart => true} do |f|
+  fieldset.inputs
+    ol
+      li.input
+        label.label for='backup'
+          | Do you want to perform a data backup before the import?
+        = check_box_tag('backup',  'yes', true)
+  fieldset.actions
+    = submit_tag 'Import'

@@ -1,0 +1,11 @@
+.not-for-print
+  ul.small-block-grid-1.medium-block-grid-1.large-block-grid-1
+    - @file_links.each do |file|
+      li
+        object data="#{attachment_url(file, :file)}" height="50%" style=("height: 500px;") type="application/pdf" width="100%"
+          p
+            | It appears you don't have a PDF plugin for this browser.
+            | No biggie... you can
+            a href="#{attachment_url(file, :file)}"
+              | click here to
+              | download the PDF file.

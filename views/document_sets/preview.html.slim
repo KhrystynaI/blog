@@ -1,0 +1,15 @@
+.row.actions.right
+  a href="#{ops_path(customer: current_customer, id: @document_set, user_id: @user_id, format: 'pdf')}"
+    i.fi-download &nbsp;download
+
+.row
+  - if @document_set.one_page.present?
+    = render partial: 'one_page_document'
+  - else
+    .ops
+      table align="center" width="100%"
+        = render partial: 'table_head'
+        = render partial: 'table_questions'
+      = render partial: 'disclaimer'
+      = render partial: 'files_preview'
+      = render partial: 'files_for_print'

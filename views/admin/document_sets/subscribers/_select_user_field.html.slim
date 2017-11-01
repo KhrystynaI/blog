@@ -1,0 +1,58 @@
+fieldset
+  ol
+    li
+      label.label for='subscriber_id'
+        | Select a Subscriber
+      select#subscriber_id name="order_item[subscriber_id]" style="width: 100%"
+
+javascript:
+  (function ($) {
+    $("#subscriber_id").select2({
+      allowClear: true,
+      placeholder: 'User name',
+      ajax: {
+        url: "#{select_users_admin_document_set_path}",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            name: params.term, // search term
+            page: params.page,
+            customer_id: #{resource.customer_id}
+          };
+        },
+        processResults: function (data, params) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      }, // let our custom formatter work
+      minimumInputLength: 1,
+      templateResult: formatSubscriber,
+      templateSelection: formatSubscriberSelection,
+      tags: true,
+      createTag: function (params) {
+        return {
+          id: params.term,
+          text: params.term,
+          newOption: true
+        }
+      },
+      selectOnBlur: true
+    });
+
+    function formatSubscriber(subscriber) {
+      if (subscriber.loading) return subscriber.text;
+
+      return subscriber.name;
+    }
+
+
+    function formatSubscriberSelection(subscriber) {
+      return subscriber.name || subscriber.text;
+    }
+  })(jQuery);

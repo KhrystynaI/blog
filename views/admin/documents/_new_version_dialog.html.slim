@@ -1,0 +1,18 @@
+.foundation
+  a#new_version_button.radius.button data-reveal-id="new_ds" href="#" Create a new version of a Document
+  #new_ds.reveal-modal.tiny aria-hidden="true" aria-labelledby="modalTitle" data-reveal="" role="dialog"
+    a.close-reveal-modal aria-label="Close" &#215;
+    h4#new_ds_title Create a new version of a Document
+    =form_tag admin_documents_path, method: "post" do
+      =label_tag :version, 'New version number'
+      =text_field_tag :version, version
+      =hidden_field_tag :parent_id, parent_id
+      .actions
+        =submit_tag 'Create'
+
+javascript:
+  $(document).ready(function () {
+    $("#new_version_button").click(function () {
+      $("#new_ds").foundation("reveal", "open");
+    });
+  });

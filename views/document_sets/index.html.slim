@@ -1,0 +1,34 @@
+= @total
+|  document(s) total.
+table.index_table.full-width
+  thead
+    tr
+      th.col.col-ds_title Customer
+      th.col.col-ds_title Title
+      th.col.col-ds_version Version
+      th.col.col-ds_vendor Vendor
+      th.col.col-ds_product Product
+      /th.col.col-ds_tag_list Tag List
+      th.col.col-actions Actions
+  tbody
+    -@document_sets.each do |document|
+      tr
+        td
+          =document.customer.try(:name)
+        td
+          =document.title
+        td
+          =document.version
+        td
+          =document.vendor.try(:name)
+        td
+          =document.product.try(:name)
+        /td
+        /  =document.tag_list
+        td.center
+          =link_to 'Preview', preview_path(document.try(:customer).try(:path), document.id), class: 'member_link'
+          -if document.pdf
+            =link_to ' pdf', attachment_url(document.pdf, :file),
+                       class: 'member_link fi-page-pdf', :target => "_blank"
+p
+  = paginate @document_sets

@@ -1,0 +1,28 @@
+button data-reveal-id="universal-questions-dialog" Add Standard Questions
+
+#universal-questions-dialog.reveal-modal.medium aria-hidden="true" aria-labelledby="modalTitle" data-reveal=true role="dialog"
+  h4 Select Standard Questions to add
+  = render 'add_questions_categories_tree'
+  a.button.cc-close-reveal-modal  Add Questions
+  a.close-reveal-modal aria-label="Close"  ×
+
+javascript:
+  var treeData = #{tree_data.to_json.html_safe};
+  $('a.cc-close-reveal-modal').click(function () {
+    $(this).parent().foundation('reveal', 'close');
+    var tree = $("#treetable").fancytree("getTree");
+    var d = tree.toDict(true);
+    var send_data = JSON.stringify({ id: #{question_set.id}, tree_data: d});
+    jQuery.ajax({
+      type: "POST",
+      url: "#{add_universal_questions_admin_question_set_path(question_set).to_s}",
+      dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      data: send_data,
+      traditional: true,
+      success: function (data) {
+        window.location.href = "#{edit_admin_question_set_path(question_set).to_s}#questions";
+        location.reload();
+      }
+    });
+  });

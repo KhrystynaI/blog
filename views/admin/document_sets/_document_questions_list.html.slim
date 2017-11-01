@@ -1,0 +1,61 @@
+// deprecated
+tr
+  td.question-document-title span=4
+    =document.title
+  - document_questions = document_set.ds_questions_by_object(document)
+  - questions_categories = groupify_questions_for_list(document_questions)
+  - questions_categories.each do | questions_category |
+    - if questions_category[0]
+      tr
+        td.question-category-title span=4
+          =questions_category[0].name
+    - else
+      tr
+        td.question-category-title span=4
+          ="No Category"
+    - questions_category[1].each do | question |
+      tr id="question_#{question.id.to_s}"
+        - question_link = QuestionLink.find_by(subject: document, :question => question)
+        - ds_question = DsQuestion.find_by(document_set: document_set, question_link: question_link)
+        td.question-text
+          = question.text
+        td.question-answer
+          =ds_question.actual_answer
+        td.question-original_text
+          =question_link.original_text
+        td.question-customer_question
+          - if document_set.customer && document_set.customer.questions.include?(question)
+            |&radic;
+        td
+          = link_to 'Edit answer', '#', :class => "edit_link_#{ds_question.id} member_link"
+          - if ds_question.answer
+            = link_to 'Restore answer', restore_answer_admin_ds_question_path(ds_question),
+                      :class => 'restore_link member_link',
+                      data: {confirm: 'Are you sure you want to restore answer?'}
+          = link_to 'Delete', admin_ds_question_path(ds_question),
+                    :method => :delete, :class => 'delete_link member_link',
+                    data: { confirm: 'Are you sure you want to delete this?' }
+
+          .reveal-modal.tiny aria-hidden="true" aria-labelledby="modalTitle" role="dialog" id="edit-answer_#{ds_question.id}-dialog" data-reveal=true
+            h4 Editing Question
+            h5 = question.text
+
+            =form_for([:admin, ds_question]) do |f|
+              p
+                - if ds_question.answer
+                  | Answer:
+                  =f.text_area :answer, rows: 2, :autofocus => true, class:"textarea-answers"
+                - else
+                  | Answer:
+                  =f.text_area :answer, rows: 2, :autofocus => true, class:"textarea-answers", value: question_link.answer
+              br/
+              =f.submit 'Save answer', class: "just-close-modal"
+            a.close-reveal-modal aria-label="Close" &#215;
+          javascript:
+            $(document).ready(function () {
+              var class_edit_link = ".edit_link_#{ds_question.id}";
+              $(class_edit_link).click(function () {
+                var id_dialog = "#edit-answer_#{ds_question.id}-dialog";
+                $(id_dialog).foundation("reveal", "open");
+              });
+            });

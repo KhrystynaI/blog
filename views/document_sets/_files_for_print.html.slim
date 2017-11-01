@@ -1,0 +1,48 @@
+.for-print
+  - @file_links.each do |file|
+    div id="#{file.file_id}"
+    /[if !IE 8]
+      javascript:
+        var url = "#{attachment_url(file, :file)}";
+        PDFJS.workerSrc = "#{asset_path('pdf.worker.js')}";
+        'use strict';
+        function renderPage(div, pdf, pageNumber, callback) {
+          pdf.getPage(pageNumber).then(function(page) {
+            var scale = 1.5;
+            var viewport = page.getViewport(scale);
+
+            var pageDisplayWidth = viewport.width;
+            var pageDisplayHeight = viewport.height;
+
+            var pageDivHolder = document.createElement('div');
+            pageDivHolder.className = 'pdfpage';
+            pageDivHolder.style.width = pageDisplayWidth + 'px';
+            pageDivHolder.style.height = pageDisplayHeight + 'px';
+            div.appendChild(pageDivHolder);
+
+            // Prepare canvas using PDF page dimensions
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+            canvas.width = pageDisplayWidth;
+            canvas.height = pageDisplayHeight;
+            pageDivHolder.appendChild(canvas);
+
+            // Render PDF page into canvas context
+            var renderContext = {
+              canvasContext: context,
+              viewport: viewport
+            };
+            page.render(renderContext).promise.then(callback);
+          });
+        }
+        PDFJS.getDocument(url).then(function renderPdf(pdf) {
+          var viewer = document.getElementById("#{file.file_id}");
+          var pageNumber = 1;
+          renderPage(viewer, pdf, pageNumber++, function pageRenderingComplete() {
+            if (pageNumber > pdf.numPages) {
+              return;
+            }
+            // Continue rendering of the next page
+            renderPage(viewer, pdf, pageNumber++, pageRenderingComplete);
+          });
+        });

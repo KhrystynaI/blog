@@ -1,0 +1,25 @@
+columns class: 'action' do |cols|
+  span do
+    render partial: 'admin/document_sets/questions/add_custom_question',
+           locals: {question_links: resource.question_links, customer: resource}
+  end
+
+  span do
+    questions_array = (Question.standard - resource.all_questions)
+    tree_data = cols.groupify_questions_for_ds_tree(questions_array, document_set)
+    render partial: 'admin/document_sets/questions/add_universal_question',
+           locals: {tree_data: tree_data, customer: resource}
+  end
+
+  span do
+    render partial: 'admin/document_sets/questions/copy_questions'
+  end
+end if editor_policy.update?
+
+columns id: 'questions-table', class: 'ui-tabs-panel ui-widget-content batch_container',
+        'data-path': delete_questions_admin_document_set_path(resource),
+        'data-resource-id': resource.id do
+  render partial: 'admin/document_sets/questions/table_questions'
+end
+
+br

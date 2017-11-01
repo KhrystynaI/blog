@@ -1,0 +1,17 @@
+footer{
+  margin-top: 2rem !important;
+}
+
+@media print {
+  header, footer, .not-for-print {
+    display: none;
+  }
+  .for-print {
+    h2 { display: none; }
+    display: inline;
+  }
+}
+
+header, footer{
+  @include grid-row;
+}

@@ -1,0 +1,26 @@
+table {
+  tr {
+    td pre {
+      margin: 0 1rem;
+      font: 0.7rem 'lucida grande';
+      font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+      color: grey;
+    }
+  }
+
+  .fancytree-ext-table tbody tr.fancytree-selected {
+    background-color: #ffffff;
+  }
+
+  tr.error {
+    .status {
+      color: red;
+    }
+  }
+}
+
+.index_table.results {
+  .fail {
+    background-color: lightcoral;
+  }
+}

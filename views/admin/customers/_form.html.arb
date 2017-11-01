@@ -1,0 +1,34 @@
+tabs do
+  tab 'Information' do
+    active_admin_form_for [:admin, resource] do |f|
+      f.inputs 'Customer Details' do
+        f.input :name
+        f.input :path
+        f.input :access_key
+      end
+      f.actions
+    end
+  end
+
+  tab 'Questions', name: 'questions' do
+    columns id: 'questions-table', class: 'ui-tabs-panel ui-widget-content' do
+      questions_categories = groupify_questions_for_list(resource.questions)
+      render partial: 'questions_list',
+             locals: { questions_categories: questions_categories,
+                       questions_object: resource }
+    end
+    columns class: 'actions' do |cols|
+      span do
+        render partial: 'admin/customers/add_custom_question',
+               locals: { question_links: resource.question_links, customer: resource }
+      end
+      span do
+        questions_array = (Question.standard.all - resource.questions)
+        tree_data = cols.groupify_questions_for_tree(questions_array, 'sets', false)
+        render partial: 'add_universal_question',
+               locals: { tree_data: tree_data, customer: resource }
+      end
+    end
+  end unless resource.new_record?
+end
+

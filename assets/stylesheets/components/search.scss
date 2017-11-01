@@ -1,0 +1,19 @@
+input[type="search"]{
+  margin-bottom: 0;
+}
+
+.search-tip, .subscriber-tip{
+  font-size: 0.7rem;
+  color: grey;
+}
+
+.user-search-drop{
+  font-size: 1.2rem;
+}
+
+#search-form{
+  .select2-container .select2-selection--single{
+    height: 2.3125rem;
+    border-radius: 0;
+  }
+}

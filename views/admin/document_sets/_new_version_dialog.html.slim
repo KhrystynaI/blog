@@ -1,0 +1,37 @@
+.foundation
+  a.radius.button data-reveal-id="NewDS" href="#"  Create a new version of a Document set
+  #NewDS.reveal-modal.tiny aria-hidden="true" aria-labelledby="modalTitle" data-reveal="" role="dialog"
+    h4#NewDSTitle Create a new version of a Document set
+    h5 =@document_set.display_name
+    =form_tag copy_admin_document_set_path(resource), method: "post" do
+      =label_tag :version, 'New version number'
+      =text_field_tag :version, version
+      =text_field_tag :id, parent_id, style: "display: none;"
+      hr/
+      b You can also:
+      br/
+      =check_box_tag :copy_documents, "1", true, onclick: 'strCheckbox(this);'
+      =label_tag :copy_documents, 'Copy documents & contract'
+      br/
+      =check_box_tag :copy_questions, "1", true, onclick: 'strCheckbox(this);'
+      =label_tag :copy_questions, 'Copy questions'
+      br/
+      =check_box_tag :copy_answers, "1", true, onclick: 'strCheckbox(this);'
+      =label_tag :copy_answers, 'Copy answers'
+      br/
+      = check_box_tag :renew_orders, "1", true, onclick: 'strCheckbox(this);'
+      =label_tag :renew_orders, 'Renew orders'
+      br/
+      br/
+      =submit_tag 'Create'
+      a.close-reveal-modal aria-label="Close" &#215;
+
+javascript:
+  // list of checkboxes group
+  var str = [{id: copy_documents},{id: copy_questions},{id: copy_answers}];
+
+  $(document).ready(function () {
+    $("#new_version_button").click(function () {
+      $("#new_ds").foundation("reveal", "open");
+    });
+  });

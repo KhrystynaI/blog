@@ -1,0 +1,87 @@
+button data-reveal-id="copy-questions-dialog" title="Copy questions from another Document Set/Version"
+  | Copy Questions
+
+.reveal-modal.medium aria-hidden="true" aria-labelledby="modalTitle" role="dialog" id="copy-questions-dialog" data-reveal=true
+  a.close-reveal-modal aria-label="Close"  ×
+  h2 Copy Questions from another Document Set
+  h3 Find the source Document Set to copy questions from and click on it.
+  .hint Document Set lookup: Type ID, Version or Title and press Enter to find a document set.
+  .hint Document Sets with no questions are not displayed.
+  .body
+    .select_documents_grid
+
+javascript:
+  $(function () {
+    $("#copy-questions-dialog .select_documents_grid").jsGrid({
+      height: "320px",
+      width: "100%",
+      filtering: true,
+      inserting: false,
+      editing: false,
+      sorting: false,
+      paging: true,
+      pageLoading: true,
+      autoload: false,
+      noDataContent: 'No results found. Try to change the filter.',
+      pageSize: 6,
+      pageButtonCount: 5,
+      onInit: function (args) {
+        gridInstance = args.grid;
+        $($(".select_documents_grid .jsgrid-filter-row td input").first()).val('#{@document_set.doc_id}');
+      },
+      onDataLoaded: function(data){
+        setTimeout(function () {
+          $("#copy-questions-dialog .select_documents_grid tbody tr").attr("title", "Click to Copy Questions from.");
+        }, 100);
+      },
+      controller: {
+        loadData: function (filter) {
+          return $.ajax({
+            type: "GET",
+            url: "#{selection_list_admin_document_set_url(resource)}",
+            data: filter
+          });
+        }
+      },
+      fields: [
+        {name: "doc_id", type: "text", width: 70, title: 'Doc Set ID (exact)', value: '13'},
+        {name: "version", type: "text", width: 70, title: 'Version'},
+        {name: "title", type: "text", width: 250, title: 'Title or ID (partial)'},
+        {name: 'question_count', type: "text", width: 70, title: 'Question Count', filtering: false},
+        {type: "control", width: 70, editButton: false, deleteButton: false, modeSwitchButton: false }
+      ],
+      rowClick: function (args) {
+        if (confirm("Existing questions will be replaced with questions from selected document set. Proceed?"))
+          copyQuestionsFromDocSet(args.item.id);
+      }
+    });
+
+    var copyQuestionsFromDocSet = function (doc_set_id) {
+      var send_data = JSON.stringify({source_document_set_id: doc_set_id});
+      jQuery.post({
+        url: "#{copy_questions_admin_document_set_path(@document_set)}",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        data: send_data,
+        traditional: true,
+        success: function (data) {
+          $('#copy-questions-dialog').foundation('reveal', 'close');
+          ActiveAdmin.flash.notice('Questions(s) copied to the Socument Set.')
+          location.reload();
+        },
+        error: function (xhr, status, errorThrown) {
+          $('#copy-questions-dialog').foundation('reveal', 'close');
+          ActiveAdmin.flash.error('Sorry. Something went wrong.');
+          location.reload();
+        }
+      });
+    };
+
+    $(document).on('opened.fndtn.reveal', '#copy-questions-dialog', function () {
+      $($("#copy-questions-dialog .select_documents_grid .jsgrid-filter-row td input")
+              .first()).val('#{@document_set.doc_id}');
+
+      $("#copy-questions-dialog .select_documents_grid")
+              .jsGrid("search", {doc_id: '#{@document_set.doc_id}'});
+    });
+  });

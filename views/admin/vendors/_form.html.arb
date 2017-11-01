@@ -1,0 +1,14 @@
+active_admin_form_for [:admin, resource] do |f|
+
+  f.inputs 'Vendor Details' do
+    f.input :name
+    f.input :products
+    f.input :parent_company, label: 'Parent Company'
+    f.input :location
+    f.input :terms_source, label: 'T&C Source'
+    f.input :terms_link, label: 'T&C Link'
+    f.input :notes, as: :text
+  end
+  f.actions
+end
+

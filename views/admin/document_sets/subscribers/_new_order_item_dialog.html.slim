@@ -1,0 +1,6 @@
+button data-reveal-id="new-order-item-dialog" New Order Item
+
+.reveal-modal.medium aria-hidden="true" aria-labelledby="modalTitle" role="dialog" id="new-order-item-dialog" data-reveal=true
+  h4 Enter new order item to Add or Renew the subscription for the user
+  = render partial: 'admin/document_sets/subscribers/order_item_form', locals: {order_item: order_item}
+  a.close-reveal-modal aria-label="Close" &#215;

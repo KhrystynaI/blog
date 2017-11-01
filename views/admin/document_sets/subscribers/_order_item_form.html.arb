@@ -1,0 +1,25 @@
+active_admin_form_for [:admin, order_item] do |f|
+  f.inputs do
+    f.input :return_to, input_html: {value: edit_admin_document_set_path(resource, anchor: 'subscribers'),
+                                     name: 'return_to'}, as: :hidden
+    f.input :document_set_id, :as => :hidden
+    f.input :order_id, label: 'Order ID'
+    f.input :expiry_date, as: :datepicker
+  end
+
+  tabs do
+    tab 'Enter new User Info' do
+      f.inputs 'Subscriber Info', for: :subscriber do |s|
+        s.input :brid, label: 'Employee ID'
+        s.input :first_name
+        s.input :last_name
+        s.input :address
+      end
+    end
+    tab 'or select existing User' do
+      render partial: 'admin/document_sets/subscribers/select_user_field'
+    end
+  end
+
+  f.actions
+end

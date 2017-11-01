@@ -1,0 +1,60 @@
+columns class: 'controls' do
+  columns class: 'right' do
+    if resource.published?
+      button_to 'Withdraw', withdraw_admin_contract_path(resource), method: :post
+    else
+      button_to 'Publish', publish_admin_contract_path(resource), method: :post
+    end
+  end
+end unless resource.new_record?
+
+columns class: 'controls' do
+  columns class: 'document-status left' do
+    'Status: '.html_safe
+  end
+  columns class: 'left' do
+    doc_status_tag(resource)
+  end
+end
+
+tabs do
+  tab 'Information' do
+    active_admin_form_for [:admin, resource] do |f|
+      f.inputs "Contract Details" do
+        f.input :doc_id, label: 'Contract ID'
+        f.input :title
+        f.input :contract_owner, as: :select,
+                collection: ContractOwner.collection.invert
+        f.input :start_date, as: :datepicker
+        f.input :end_date, as: :datepicker
+        f.input :duration
+        f.input :expiry_date, as: :datepicker
+        f.input :price
+        f.input :phone
+
+        f.input :tag_list
+      end
+
+      f.inputs 'Custom fields' do
+        f.has_many :fields, new_record: 'Add Custom Field', allow_destroy: true do |b|
+          b.input :title
+          b.input :value
+        end
+      end
+      f.actions
+    end
+  end
+  tab 'Files', name: 'files'do
+    columns id: 'file-table', class: 'ui-tabs-panel ui-widget-content' do
+      render partial: 'file_list',
+             locals: { resource: resource }
+    end
+    active_admin_form_for [:admin, resource] do |f|
+      # f.label :file_links_files, "Documents", class: "label"
+      f.attachment_field :file_links_files, multiple: true, presigned: true
+      f.actions do
+        button_to 'Upload'
+      end
+    end
+  end unless resource.new_record?
+end

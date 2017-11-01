@@ -1,0 +1,23 @@
+h1 Importing Subscriptions
+= link_to 'Read more about Importing Subscriptions',
+        page_path('admin/import/subscriptions'), target: '_blank', class: 'kb-link'
+br
+br
+= form_for :csv, :url => {:action => "import"}, :html => {:multipart => true} do |f|
+  fieldset.inputs
+    ol
+      li.input
+        label.label for='customer_id' class='required'
+          | Select a customer (*)
+        = f.collection_select('customer_id', Customer.all, :id, :name)
+      li.input
+        label.label for='csv_file'
+          | Select a CSV File to import:
+        = f.file_field :file
+      li.input
+        label.label for='backup'
+          | Backup data before import?
+        = check_box_tag('backup',  'yes', true)
+  fieldset.actions
+    = submit_tag 'Upload'
+

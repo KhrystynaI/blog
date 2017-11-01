@@ -1,0 +1,8 @@
+delete_selected = ActiveAdmin::BatchAction.new(
+  :delete_questions, 'Delete',
+  confirm: "Delete selected questions from the Document Set?") do |selection|
+  redirect_to collection_path, notice: "#{selection.length} questions deleted."
+end
+
+batch_action_selector [delete_selected]
+

@@ -1,0 +1,43 @@
+h2 Importing files(documents)
+.description
+  ul
+    li
+      | Files are imported from the #{link_to('Google Drive folder', Setting['google_drive_folder_url'], target: '_blank')}.
+      | You have to upload files to that folder first.
+    li
+      | Folder should be shared with the CMS service account:
+      strong
+        |  file-import@contractscomplete.iam.gserviceaccount.com
+    li
+      | The root folder should contain subfolders named after the customer name.
+      | If no appropriate customer is found, folder is skipped.
+    li
+      | Within the Customer folder there should be subfolders named after the Document Type (titles).
+      | If no appropriate document type is found, it will be created at the import process.
+    li
+      | Files are named with the special pattern:
+      br
+      strong DOCID_VERSION_[POSITION]_File_Title.pdf
+      br
+      | Example:
+      br
+      strong 1683_1_1_Latin Finance (GrpSub).pdf
+      br
+      strong 1683_1_Latin Finance (GrpSub).pdf
+    li
+      | Files are added to the document having appropriate DOC_ID and Version, type and customer.
+      | New Document is created if it does not exist.
+    li
+      | Changed files are updated. Existing files are ignored.
+      | So that you can perform the import several times without a side effects.
+    li
+      | The new document is named after the file with position 1,
+      | should the several files for the document imported.
+    li
+      | The document is linked (added) to the appropriate Document Set if docset is present and document is not added yet.
+    li
+      | Status column displays:
+      ul
+        li Ok - if any update performed (file added or updated, document created, added to document set)
+        li Skipped - if no updates performed (file is already present in CMS, no changes needed)
+        li Fail - if error ocurred. e.g. Incorrect file name.

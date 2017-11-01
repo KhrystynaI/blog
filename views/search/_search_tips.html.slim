@@ -1,0 +1,22 @@
+a.search-tip href='#' class='small' Search Help
+
+#search-tip-dialog.reveal-modal.medium aria-hidden='true' aria-labelledby='modalTitle' role='dialog' data-reveal=true
+  a.close-reveal-modal aria-label="Close"  ×
+  h4 Search tips
+
+  ul
+    li Words in plural will match singular and vice versa;
+    li Stop words like articles are ignored;
+    li
+      | When you enter multiple words - each word is expected to be present
+      |  somewhere in the document in any order;
+    li You can enclose the query with a single or double quotes to search for a phrase;
+
+
+javascript:
+  $(document).ready(function () {
+    $(".search-tip").click(function () {
+      $("#search-tip-dialog").foundation('reveal', 'open');
+      return false;
+    });
+  });

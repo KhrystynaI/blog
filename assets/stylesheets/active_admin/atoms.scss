@@ -1,0 +1,14 @@
+/*doc Display list of key:value pairs.
+Example:
+<div class="attributes">
+  <span class="label">Expiry date</span>
+  <span class="value">Sept 23, 2016</span>
+</div>
+*/
+.attributes{
+  .label {font-weight: bold;}
+}
+
+.no-decor{
+  list-style: none;
+}

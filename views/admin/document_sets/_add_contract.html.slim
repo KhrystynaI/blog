@@ -1,0 +1,79 @@
+button data-reveal-id="new-contract-dialog" Add Contract
+
+.reveal-modal.medium aria-hidden="true" aria-labelledby="modalTitle" role="dialog" id="new-contract-dialog" data-reveal=true
+  h4 Choose the contract
+  .left style="width: 60%"
+    =form_for([:admin, resource]) do |f|
+      p
+        | Contract:
+        br/
+        select.js-data-contract-ajax#document_link_document_id name="document_set[contract_id]" style="width: 100%"
+      br/
+      =f.submit 'Choose', class: "just-close-modal"
+  .right
+    #filters_sidebar_section.sidebar_section.panel.left
+      h3 Filters
+      .panel_contents
+        p
+          | State:
+          br/
+          =select_tag "contract_type", options_for_select(@contract_states, ""),
+                      include_blank: true, onchange: "onChangeContractState()", id: "selectContractState"
+  a.close-reveal-modal aria-label="Close" &#215;
+
+  javascript:
+    var contract_state;
+    $(document).ready(function () {
+      onChangeContractState();
+    });
+    function onChangeContractState() {
+      var s = document.getElementById("selectContractState");
+      contract_state = s.options[s.selectedIndex].value;
+    }
+    $(".js-data-contract-ajax").select2({
+      ajax: {
+        url: "#{selection_list_admin_contracts_url}",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term, // search term
+            page: params.page,
+            contract_state: contract_state
+          };
+        },
+        processResults: function (data, page) {
+          // parse the results into the format expected by Select2.
+          // since we are using custom formatting functions we do not need to
+          // alter the remote JSON data
+          return {
+            results: data.items,
+            pagination: { more: true }
+          };
+        },
+        cache: true
+      },
+      escapeMarkup: function (markup) {
+        return markup;
+      }, // let our custom formatter work
+      minimumInputLength: 1,
+      templateResult: formatRepoContract, // omitted for brevity, see the source of this page
+      templateSelection: formatRepoSelectionContract // omitted for brevity, see the source of this page
+    });
+
+    function formatRepoContract(repo) {
+      if (repo.loading) return repo.title;
+
+      var markup = '<div>' +
+              '<div class="choose-table">' +
+              '    <div class="choose-caption">' + repo.title + '</div>' +
+              '    <div class="choose-table-row">' +
+              '      <div class="d-choose-state cell">' + repo.state + '</div>' +
+              '    </div>' +
+              '</div>';
+      return markup;
+    }
+
+    function formatRepoSelectionContract(repo) {
+      return repo.title;
+    }

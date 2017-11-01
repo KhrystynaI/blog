@@ -1,0 +1,56 @@
+production_env = ENV.fetch('LANDSCAPE') == 'production'
+
+div(class: 'box') do
+  h3 "This page helps you copy Production data to the Test server."
+  span 'There are two steps: '
+
+  panel '1. Create a Production snapshot' do
+
+    if syncer.dump_time
+      div "The recent snapshot creation time: <b>#{syncer.dump_time.localtime.strftime('%F %R')}</b>".html_safe
+      div "If you believe the snapshot is fresh you can continue to the step 2."
+    else
+      div "No recent snapshot found."
+    end
+
+    unless production_env
+      link = link_to 'link', '//cms.contractscomplete.com/admin/sync'
+      div "In order to create a new snapshot please switch to the production site (follow this #{link}) then click "\
+              "'Create a Snapshot' button.".html_safe
+      div(class: 'small') { "Alternatively you can navigate the production site, open admin panel "\
+                                "and select 'System/Copy production data' from the main menu." }
+    end
+
+    if production_env
+
+      div link_to("Create a Snapshot ", admin_sync_create_snapshot_path, method: :post,
+                  data: {confirm: "Creation of a Snapshot may take a few minutes. Do you want to Proceed?"},
+                  class: 'button').html_safe
+    end
+  end
+
+  panel '2. Load the production snapshot.' do
+    if production_env
+      if syncer.dump_time
+        link = link_to 'link', 'http://cms-test.contractscomplete.com/admin/sync'
+        div "In order to load the production data please switch to the test site "\
+          "(follow this #{link}) then click 'Load a Snapshot' button.".html_safe
+        div(class: 'small') { "Alternatively you can navigate the test site, open admin panel "\
+                                "and select 'System/Copy production data' from the main menu." }
+      else
+        div "No recent snapshot found. Please complete the step 1 first."
+      end
+    else
+      if syncer.dump_time
+        div 'Click the button below to load the Production snapshot to the current server.'
+
+        div link_to("Load a snapshot", admin_sync_load_snapshot_path, method: :post,
+                    data: {confirm: "Note! All data on the current server will be relpaced with the snapshot data. "\
+                        "Loading a snapshot may take several minutes. Do you want Proceed?"},
+                    class: 'button').html_safe
+      else
+        div "No recent snapshot found. Please complete the step 1 first."
+      end
+    end
+  end
+end

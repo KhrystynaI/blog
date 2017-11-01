@@ -1,0 +1,12 @@
+.ie8 {
+  .reveal-modal-bg {
+    background: white;
+  }
+
+  .top-bar-section .has-dropdown {
+    a:after, a:before {
+      border: none !important;
+      content: none !important;
+    }
+  }
+}

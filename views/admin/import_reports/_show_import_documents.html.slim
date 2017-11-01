@@ -1,0 +1,46 @@
+- results = local_assigns[:results]
+- user = local_assigns[:user]
+- import_date = local_assigns[:import_date]
+- duration = local_assigns[:duration]
+- counter = 0
+
+h2 File Import Report
+| Imported by #{user&.display_name} on #{import_date}
+br
+= results.count
+|  records(s) total.
+table.index_table.full-width.results
+  thead
+    tr
+      th.col.counter Line No
+      th.col.action Action
+      th.col.status Status
+      th.col.log Logs
+  tbody
+    - results.each do |message, data|
+      - counter += 1
+      tr.light-grey-bg(class='#{data[:errors].present? ? :error : :success}')
+        td.counter
+          = counter
+        td.action
+          = message
+        td.status
+          - if data[:errors].present?
+            = 'Fail'
+          - elsif data[:changes] && data[:changes].empty?
+            = 'Skipped'
+          - elsif data[:changes]
+            = 'Ok'
+        td.log
+          = render 'document_import_logs', logs: data[:logs], errors: data[:errors]
+p
+
+=link_to 'Back to Reports List', admin_import_reports_path
+
+javascript:
+  $(document).ready(function () {
+    $(".index_table").jSTableFilters({
+      columns: [2]
+    });
+  });
+

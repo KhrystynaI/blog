@@ -1,0 +1,33 @@
+doctype html
+html
+  head
+    meta content=("text/html; charset=UTF-8") http-equiv="Content-Type" /
+    meta name="viewport" content="width=device-width, initial-scale=1.0" /
+    title= content_for?(:title) ? yield(:title) : "Contracts Complete"
+    = stylesheet_link_tag    'kb', media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag 'jquery'
+  body.kb
+    = render 'layouts/environment_ribbon', options: {align: :right} unless ENV['LANDSCAPE'] == 'production'
+
+    .off-canvas-wrap(data-offcanvas)
+      main.inner-wrap
+        nav.tab-bar
+          section.left.tab-bar-section
+            a.left-off-canvas-toggle.menu-icon
+              span
+          section.right.tab-bar-section
+            h1 Contracts Complete Knowledge Base &nbsp;&nbsp;
+
+
+        nav.left-off-canvas-menu
+          = render 'layouts/kb_menu'
+
+        .content.main-content
+          = yield
+
+          hr
+          footer
+            = render 'layouts/footer', hide_contact_us: true
+
+    = javascript_include_tag 'kb', 'data-turbolinks-track' => true
+    = yield :javascripts

@@ -1,0 +1,16 @@
+- @questions_categories.each do | category, question_array |
+  tr.light-grey-bg
+    td
+      strong
+        =category
+    td
+    td
+  - question_array.each do | question |
+    tr
+      td.questions
+        = question[:question]
+      td.answers
+        == Sanitize.fragment(question[:answer], Sanitize::Config::RELAXED)
+      td.original_text
+        == Sanitize.fragment(question[:original_text], Sanitize::Config::RELAXED)
+

@@ -1,0 +1,60 @@
+- results = local_assigns[:results]
+- user = local_assigns[:user]
+- import_date = local_assigns[:import_date]
+- duration = local_assigns[:duration]
+- failures = results.select{|r| r.status == 'fail'}
+
+
+| Imported by #{user.display_name} on #{import_date}
+br
+= results.count
+|  records(s) total. #{failures.count} failure(s).
+table.index_table.full-width.results
+  thead
+    tr
+      th.col.col-line-no Line No
+      th.col.col-title Title
+      th.col.col-version Doc Set Id
+      th.col.col-version Version
+      th.col.col-order Order ID
+      th.col.col-order Expiry Date
+      th.col.col-order Employee ID
+      th.col.col-first-name First Name
+      th.col.col-last-name Last Name
+      th.col.col.address Address
+      th.col.col-status Status
+  tbody
+    - results.each do |result|
+      tr.light-grey-bg(class="#{result.status}")
+        td
+          = result.record.line_number+1 rescue nil
+        td
+          = result.record.title
+        td
+          = result.record.doc_id
+        td
+          = result.record.version
+        td
+          = result.record.order_id
+        td
+          = result.record.expiry_date
+        td
+          = result.record.brid
+        td
+          = result.record.subscriber_first_name
+        td
+          = result.record.subscriber_last_name
+        td
+          = result.record.address
+        td
+          = result.status.humanize
+      tr.log
+        td colspan=9
+          pre
+            = result.logs.join("\n")
+            - if result.failed?
+              div.has-error Errors:
+              = result.errors.join("\n")
+p
+
+=link_to 'Back to Reports List', admin_import_reports_path

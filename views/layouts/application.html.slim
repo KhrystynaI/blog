@@ -1,0 +1,47 @@
+doctype html
+/[if lt IE 7]
+  | <html class="ie ie6 lt-ie9 lt-ie8 lt-ie7">
+/[if IE 7]
+  | <html class="ie ie7 lt-ie9 lt-ie8">
+/[if IE 8]
+  | <html class="ie ie8 lt-ie9">
+/[if IE 9]
+  | <html class="ie ie9">
+| <!--[if (gte IE 9)|!(IE)]<!-->
+html
+  | <!--<![endif]-->
+  head
+    meta content=("text/html; charset=UTF-8") http-equiv="Content-Type" /
+    meta name="viewport" content="width=device-width, initial-scale=1.0" /
+    title= content_for?(:title) ? yield(:title) : "Contracts Complete"
+    = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
+    /[if !IE 8]
+      = javascript_include_tag 'pdf'
+    = javascript_include_tag 'vendor/modernizr'
+    | <!--[if (gte IE 9)|!(IE)]<!-->
+    = javascript_include_tag 'jquery'
+    | <!--<![endif]-->
+    = render 'layouts/ie8_support'
+    = csrf_meta_tags
+  body
+    = render 'layouts/loading'
+    = render 'layouts/environment_ribbon' unless ENV['LANDSCAPE'] == 'production'
+    /link href="http://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css" /
+    header
+      .row
+        = render 'layouts/header'
+    .menubar
+      .row
+        = render 'layouts/navigation'
+    main
+      .row
+        = render 'layouts/messages'
+        /= render 'layouts/breadcrumbs'
+        = yield
+    footer
+      .row
+        = render 'layouts/footer'
+
+    = javascript_include_tag 'application', 'data-turbolinks-track' => true
+    = yield :javascripts
+    = render 'layouts/ga' if %w(test production).include?(ENV['LANDSCAPE'])

@@ -1,0 +1,15 @@
+ul.off-canvas-list
+  li
+    = link_to '< Back to Admin Panel', '/admin'
+  li
+    label KB Articles
+  li
+    hr
+  li
+    = link_to 'Import Subscriptions', page_path('admin/import/subscriptions')
+  li
+    = link_to 'Import Files', page_path('admin/import/files')
+  li
+    hr
+  li
+    = link_to 'Permission matrix', '/doc/CMS Backend User Permission Matrix.pdf', target: :blank

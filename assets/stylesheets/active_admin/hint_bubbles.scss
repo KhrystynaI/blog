@@ -1,0 +1,66 @@
+// =================================================================================
+// Hint Bubbles
+// =================================================================================
+
+@mixin bubble {
+  .bubble {
+    background: #fff;
+    position: absolute;
+    z-index: 1000;
+    bottom: 24px;
+    display: none;
+    left: -27px;
+    padding: 5px 1em 5px 1em;
+    border: 2px solid #008fcc;
+    color: #333;
+    font-size: 12px;
+    font-weight: bold;
+    max-width: 100em;
+    min-width: 32em;
+    
+    h1 & {
+      bottom: 35px;
+    }
+  }
+
+  .bubble::before {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 39px;
+    border-width: 8px 8px 0;
+    border-style: solid;
+    border-color: #008fcc transparent;
+    display: block;
+    width: 0;
+  }
+  .bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 39px;
+    border-width: 8px 8px 0;
+    border-style: solid;
+    border-color: #fff transparent;
+    display: block;
+    width: 0;
+  }
+}
+
+.hint {
+  font-size: 11px;
+  height: 16px;
+  position: relative;
+  display: inline-block;
+  @include bubble
+}
+
+.text-hint {
+  position: relative;
+  @include bubble;
+
+  .bubble {
+    min-width: 0em;
+    white-space: nowrap;
+  }
+}

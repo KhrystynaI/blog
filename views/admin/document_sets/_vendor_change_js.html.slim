@@ -1,0 +1,10 @@
+javascript:
+  $(document).ready(function () {
+    $("select#document_set_vendor_id").bind("change",function() {
+      $.ajax({
+        url: "#{change_vendor_admin_document_sets_path.to_s}",
+        data: {vendor_id: document.getElementById('document_set_vendor_id').value},
+        type: "GET"
+      })
+    });
+  })

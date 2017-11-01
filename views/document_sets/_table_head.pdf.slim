@@ -1,0 +1,49 @@
+tr
+  th.questions.blue-bg.center Licensee Rights of Service Document
+  th.answers.center =@document_set.customer.try(:name)
+  th.original_text.center =@document_set.vendor.try(:name)
+
+tr.grey-bg
+  th
+  th.center Summary
+  th.center Original text
+tr
+  td.light-grey-bg Vendor
+  td =@document_set.vendor.try(:name)
+  td
+tr
+  td.light-grey-bg License of Service
+  td =@document_set.title
+  td
+tr
+  td.light-grey-bg Contract Owner
+  td =@document_set.contract.try(:contract_owner).try(:name)
+  td =@document_set.contract.try(:contract_owner).try(:address)
+tr
+  td &nbsp;
+  td
+  td
+
+- if @user
+  - if @order_item
+    tr
+      td.light-grey-bg Order ID
+      td = @order_item.order_id
+      td =
+    tr
+      td.light-grey-bg Expiry date
+      td = @order_item.expiry_date
+      td =
+  tr
+    td.light-grey-bg Subscriber Name
+    td = @user.name
+    td
+  tr
+    td.light-grey-bg Subscriber Address
+    td = @user.address
+    td
+
+tr
+  td &nbsp;
+  td
+  td

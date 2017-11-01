@@ -1,0 +1,7 @@
+.authform
+  h3 Enter Customer access key
+  = form_tag do
+    .form-group
+      = label_tag :access_key, 'Access key:'
+      = text_field_tag :access_key, params[:access_key]
+      = submit_tag "Enter", class: 'button tiny radius'

@@ -1,0 +1,45 @@
+columns class: 'controls' do
+  columns class: 'left' do
+    # nothing here
+  end
+
+  columns class: 'right' do
+    new_version = resource.generate_new_version
+    render partial: 'new_version_dialog',
+           locals: {version: new_version,
+                    parent_id: resource.id}
+  end if authorized?(:copy, resource)
+
+end unless resource.new_record?
+
+tabs do
+  tab 'Information' do
+    active_admin_form_for [:admin, resource] do |f|
+      f.inputs "Document Details" do
+        f.input :doc_id, label: 'Doc ID'
+        f.input :document_type, as: :select,
+                collection: DocumentType.collection.invert
+        f.input :title
+        f.input :version
+        f.input :customer
+        render partial: 'tags_select',
+               locals: { tags: Tag.hash_for_hint, selected_tags: resource.tag_list }
+      end
+      f.actions if authorized?(:update, resource)
+    end
+  end
+  tab 'Files', name: 'files' do
+    columns id: 'file-table', class: 'ui-tabs-panel ui-widget-content' do
+      render partial: 'files',
+             locals: {resource: resource}
+    end
+    if resource.can_add_document? && authorized?(:update, resource)
+      active_admin_form_for [:admin, resource] do |f|
+        f.attachment_field :file_links_files, multiple: resource.multiple_choose?, presigned: true
+        f.actions do
+          button_to 'Upload'
+        end
+      end
+    end
+  end unless resource.new_record?
+end

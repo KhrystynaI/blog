@@ -1,0 +1,33 @@
+h2 Document ID import report
+
+= results.count
+|  records(s) total.
+table.index_table.full-width
+  thead
+    tr
+      th.col.col-line-no Line No
+      th.col.col-version Id
+      th.col.col-version Doc Set Id
+      th.col.col-title Title
+      th.col.col-status Status
+  tbody
+    - results.each do |result|
+      tr.light-grey-bg
+        td
+          = result.record.line_number+1 rescue nil
+        td
+          = result.record.id
+        td
+          = result.record.doc_set_id
+        td
+          = result.record.title
+        td
+          = result.status
+      tr.log
+        td colspan=5
+          pre
+            = result.logs.join("\n")
+            - if result.failed?
+              div.has-error Errors:
+              = result.errors.join("\n")
+p

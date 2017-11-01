@@ -1,0 +1,20 @@
+columns do
+  div do
+    table_for docset.full_audit_trail.reverse, class: 'index_table' do
+      column 'Date' do |activity|
+        activity.created_at.strftime('%F %R')
+      end
+      column 'User' do |activity|
+        activity.owner&.name
+      end
+      column 'Action' do |activity|
+        title = "#{activity.key.split('.').last.to_s.humanize} "
+        title += "#{activity.trackable.class.name}: #{activity.trackable.display_title }" if activity.trackable
+        title
+      end
+      column 'Changes' do |activity|
+        visible_changes activity
+      end
+    end
+  end
+end

@@ -1,0 +1,15 @@
+/! Right Nav Section
+ul.right
+  li.has-dropdown
+    =link_to(current_customer.try(:name) || 'No Customer Selected', '#')
+    ul.dropdown
+      li
+        =link_to 'Select a customer', sessions_new_path
+
+/! Left Nav Section
+ul.left
+  - if current_customer
+    /li
+    /  = link_to 'Documents', document_list_path(current_customer)
+    li
+      = link_to 'Search', search_path(current_customer)

@@ -1,0 +1,56 @@
+- unless params[:scope] == 'custom'
+  .hint You can reorder questions within categories by dragging question rows. You cannot drop question into another category.
+  .hint In order to change question category click Edit and select another category.
+  .hint In order to reorder categories navigate Questions => Question Categories in the main menu.
+- questions_categories.each do |questions_category|
+  thead
+    tr.category data-category_id="#{questions_category[0]&.id}"
+      th.question-category-title colspan=3
+        =questions_category[0]&.name
+  tbody
+    - questions_category[1].each do |question|
+      tr.question id="question#{question.id}" data-id="#{question.id}"
+        td
+          - unless params[:scope] == 'custom'
+            i class="fa fa-arrows js-reorder-handle"
+        td.col.question-text
+          = question.text
+        td.table_actions
+          - if params[:scope] == 'deleted'
+            = link_to 'Restore', restore_admin_question_path(question),
+                    method: :post, :class => 'edit_link member_link'
+          - else
+
+              = link_to 'Edit', edit_admin_question_path(question), :class => 'edit_link member_link'
+              = link_to 'Delete', admin_question_path(question),
+                        :method => :delete, :class => 'delete_link member_link',
+                        data: {confirm: 'Are you sure you want to delete this?'}
+
+javascript:
+  $(function(){
+    $("object").remove()
+  });
+- unless params[:scope] == 'custom'
+  javascript:
+    $(document).ready(function () {
+      $("#index_table_questions tbody").sortable({
+        update: function () {
+          $.ajax({
+            url: "/admin/questions/reorder",
+            type: 'patch',
+            data: serializePositions(this),
+            complete: function () {
+            }
+          });
+        }
+      });
+
+      var serializePositions = function (items_container) {
+        var result = {};
+        $.each($(items_container).find('.question'), function (i, elem) {
+          var category_id = $(elem).prevAll('.category').first().data('category_id');
+          result[$(elem).data('id')] = {position: i, category_id: category_id}
+        });
+        return {positions: result};
+      };
+    });

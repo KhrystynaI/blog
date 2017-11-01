@@ -1,0 +1,110 @@
+columns class: 'controls' do
+  columns class: 'left' do
+    attrs = {}
+    attrs['Status:'] = Arbre::Context.new(resource: resource) { doc_status_tag(resource) }.html_safe
+    attrs['Date Published:'] = long_date_format(resource.published_at) if resource.published?
+    attrs['Assignee:'] = resource.assignee.try(:name).to_s
+    attrs['Expiry date:'] = long_date_format(resource.expiry_date)
+    attributes_list(attrs)
+  end
+
+  columns class: 'right' do
+    new_version = resource.generate_new_version
+    render partial: 'new_version_dialog',
+           locals: {version: new_version, parent_id: resource.id}
+  end if !resource.new_record? && authorized?(:copy, resource)
+
+  columns class: 'right' do
+    button_to 'Preview One Page Document', preview_path(resource.customer.path, resource),
+              method: :get, target: '_blank'
+  end if resource.customer
+
+  if resource.archived?
+    columns class: 'right' do
+      button_to 'Restore', restore_admin_document_set_path(resource), method: :post
+    end if authorized?(:restore, resource)
+  else
+    columns class: 'right' do
+      if resource.published?
+        button_to 'Withdraw', withdraw_admin_document_set_path(resource), method: :post if authorized? :withdraw, resource
+      else
+        button_to 'Publish', publish_admin_document_set_path(resource), method: :post if authorized? :publish, resource
+      end
+    end
+    columns class: 'right' do
+      button_to 'Complete', complete_admin_document_set_path(resource), method: :post
+    end if (resource.in_progress? || resource.new?) && authorized?(:complete, resource)
+  end
+
+end unless resource.new_record?
+
+tabs(id: 'docset-tabs') do
+  tab 'Information', class: 'information-tab' do
+    attributes_table_for resource do
+      row :created_at
+      row :updated_at
+    end
+
+    active_admin_form_for [:admin, resource] do |f|
+      f.inputs "Document Set Details" do
+        f.input :doc_id, label: 'Doc Set ID'
+        f.input :title
+        f.input :version
+        f.input :assignee, as: :select,
+                collection: User.employees.collection.invert
+        f.input :customer
+        f.input :vendor
+        f.input :product, as: :select, collection: resource.vendor.blank? ? [] : Product.where(vendor: resource.vendor)
+
+        render partial: 'tags_select',
+               locals: {tags: Tag.hash_for_hint, selected_tags: resource.tag_list}
+      end
+      f.actions if editor_policy.update?
+    end
+
+    render partial: 'vendor_change_js'
+  end
+
+  unless resource.new_record?
+    tab 'Contract', name: 'contract', class: 'contract-tab', 'data-contract_present': resource.contract.present? do
+      columns id: 'contract', class: 'ui-tabs-panel ui-widget-content' do
+        render partial: 'contract',
+               locals: {resource: resource, contract: resource.contract}
+      end
+      columns class: 'actions' do
+        span do
+          render partial: 'add_contract',
+                 locals: {resource: resource} if editor_policy.update?
+        end
+      end
+    end
+
+    tab 'Documents', name: 'documents', class: 'documents-tab', 'data-document_count': resource.documents.count do
+      columns id: 'documents-table', class: 'ui-tabs-panel ui-widget-content' do
+        render partial: 'document_list',
+               locals: {resource: resource, documents: resource.documents}
+      end
+
+      columns class: 'actions' do
+        span do
+          render partial: 'add_document',
+                 locals: {resource: resource}
+        end
+      end if authorized? :add_documents, resource
+    end
+
+    tab "Questions", name: 'questions', class: 'questions-tab', 'data-question_count': resource.questions.count do
+      render partial: 'admin/document_sets/questions/tab_questions', locals: {document_set: resource}
+    end
+
+    tab 'Subscribers', class: 'subscribers-tab', 'data-subscriber_count': resource.order_items.active.count do
+      render partial: 'subscribers', locals: {docset: resource}
+    end
+
+    tab 'Audit Trail', class: 'audit-tab' do
+      render partial: 'audit_trail', locals: {docset: resource}
+    end
+  end
+end
+
+render partial: 'form_js'

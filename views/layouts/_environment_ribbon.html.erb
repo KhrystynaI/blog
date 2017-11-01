@@ -1,0 +1,4 @@
+<% require 'ui/components/ribbon' %>
+<%= UI::Components::Ribbon.new(
+        label: "#{CGI.escapeHTML ENV['LANDSCAPE'].to_s.humanize} server",
+        **(local_assigns[:options] || {})).html.html_safe %>

@@ -1,0 +1,57 @@
+columns class: 'batch_container',
+        'data-path': delete_subscribers_admin_document_set_path(resource),
+        'data-resource-id': resource.id do
+
+  columns do
+    column do
+      delete_selected = ActiveAdmin::BatchAction.new(
+        :delete_subscribers, 'Delete',
+        confirm: "Delete selected subscribers from the Document Set?") do |selection|
+        redirect_to collection_path, notice: "#{selection.length} users flagged"
+      end
+
+      batch_action_selector [delete_selected]
+    end
+  end if editor_policy.update?
+
+  div do
+    table_for docset.order_items, class: 'batch_table' do
+      column resource_selection_toggle_cell, class: 'col-selectable', sortable: false do |resource|
+        resource_selection_cell resource
+      end
+      column :order_id
+      column :expiry_date do |order_item|
+        order_item.expiry_date.to_s
+      end
+      column :subscriber do |order_item|
+        order_item.subscriber&.name
+      end
+      column 'Employee ID', :brid do |order_item|
+        order_item.subscriber&.brid
+      end
+      column :address do |order_item|
+        order_item.subscriber&.address
+      end
+      column :state
+      column('Active', as: '') { |order_item| status_tag(order_item.active? ? 'Yes' : 'No') }
+      column :created_at
+      column :updated_at
+      column :actions do |order_item|
+        link_to('Edit',
+                edit_admin_order_item_path(order_item,
+                                           return_to: edit_admin_document_set_path(docset, anchor: 'subscribers'))) + ' ' +
+          link_to('Delete', admin_order_item_path(order_item),
+                  data: {:confirm => "Are you sure you want to delete Order Item #{order_item.order_id}?"},
+                  :method => :delete) if editor_policy.update?
+      end
+    end
+
+    span do
+      order_item = docset.order_items.new
+      order_item.subscriber = User.new
+
+      render partial: 'admin/document_sets/subscribers/new_order_item_dialog',
+             locals: {order_item: order_item}
+    end if editor_policy.update?
+  end
+end

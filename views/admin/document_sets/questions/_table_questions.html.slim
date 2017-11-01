@@ -1,0 +1,148 @@
+- if @questions_categories.empty?
+  | No questions added to the Document Set.
+- else
+  - if editor_policy.update?
+    div.actions id='questions_sticker'
+      span
+        button id='save_questions_button' class='disabled' onclick='saveDocSetQuestions()'
+          | Save Answers
+      span
+        =render partial: 'admin/document_sets/questions/batch_delete_questions'
+
+  div.ops
+    - if editor_policy.update?
+      span
+        | To edit an answer or original text click within the light box area inside the cell of the table.
+    table(class="#{'batch_table' if editor_policy.update?}" align="center" width="100%")
+      thead
+        tr.light-grey-bg
+          th
+            - if editor_policy.update?
+              input.toggle_all type="checkbox" id="collection_selection_toggle_all" name="collection_selection_toggle_all"
+          th.questions Questions
+          th.answers Answers
+          th.original_text Original Text
+          th.actions Actions
+      tbody
+        - @questions_categories.each do |category, question_array|
+          tr.light-grey-bg
+            td
+            td
+              strong
+                = category
+            td
+            td
+            td
+          - question_array.each do |question|
+            tr id="question_#{question.fetch(:question_link_id)}" data-id="#{question.fetch(:question_link_id)}"
+              - if editor_policy.update?
+                td.col_selectable
+                  input.collection_selection type="checkbox" id="batch_action_item_#{question.fetch(:question_link_id)}" value="#{question.fetch(:question_link_id)}" name="collection_selection[]"
+                td.questions
+                  = question.fetch(:question)
+                td.answers placeholder="Click within the light box area to edit the answer."
+                  div contenteditable="true" data-type="answer" data-link="#{question[:question_link_id]}"
+                    == Sanitize.fragment(question.fetch(:answer), Sanitize::Config::RELAXED)
+                td.original_text placeholder="Click within the light box area to edit the original text."
+                  div contenteditable="true" data-type="original_text" data-link="#{question[:question_link_id]}"
+                    == Sanitize.fragment(question.fetch(:original_text), Sanitize::Config::RELAXED)
+                td.actions
+                  = link_to 'Remove', admin_question_link_path(question[:question_link_id]),
+                          :method => :delete, :class => 'delete_link member_link',
+                          data: {confirm: "Remove '#{question[:question]}' question from the document set?"}
+              - else
+                td.col_selectable
+                td.questions
+                  = question.fetch(:question)
+                td.answers
+                  == Sanitize.fragment(question.fetch(:answer), Sanitize::Config::RELAXED)
+                td.original_text
+                  == Sanitize.fragment(question.fetch(:original_text), Sanitize::Config::RELAXED)
+                td.actions
+
+javascript:
+  $(function () {
+
+    $("#questions_sticker").sticky({topSpacing: 0});
+
+    var setChangesListener = function () {
+
+      var intervalId = null;
+
+      var checkDirty = function () {
+        for (var i in CKEDITOR.instances) {
+          var editor = CKEDITOR.instances[i];
+          if (editor.checkDirty()) {
+            $('#save_questions_button').removeClass('disabled');
+            $('#questions').append(' (unsaved)');
+            window.onbeforeunload = function (e) {
+              return 'You have unsaved changes! Please save the answers.';
+            };
+            clearInterval(intervalId);
+            return;
+          }
+        }
+      };
+
+      intervalId = setInterval(checkDirty, 2000);
+    };
+
+    setChangesListener();
+
+    var questionsSaved = function () {
+      for (var i in CKEDITOR.instances) {
+        var editor = CKEDITOR.instances[i];
+        if (editor.checkDirty()) {
+          editor.resetDirty()
+        }
+      }
+      window.onbeforeunload = null;
+      setChangesListener();
+      $('#save_questions_button').addClass('disabled');
+      $('#questions').text('Questions');
+      ActiveAdmin.flash.notice('Answers Saved.', 5);
+      updateDocSetState("#{@document_set.id}");
+    };
+
+    window.saveDocSetQuestions = function () {
+      var updates = {};
+
+      for (var i in CKEDITOR.instances) {
+        var editor = CKEDITOR.instances[i];
+        if (editor.checkDirty()) {
+          if (!updates[editor.container.data('link')]) {
+            updates[editor.container.data('link')] = {};
+          }
+          updates[editor.container.data('link')][editor.container.data('type')] = editor.getData();
+        }
+      }
+
+      if (!$.isEmptyObject(updates)) {
+        $.post({
+          url: "#{update_answers_admin_question_links_path}",
+          data: {updates: updates}
+        }).done(questionsSaved)
+                .fail(function () {
+                  ActiveAdmin.flash.error('Something went wrong. Not saved.')
+                });
+      }
+    }
+  });
+
+javascript:
+  $(function () {
+    $("#docset-tabs").parent().on("tabsactivate", function (event, ui) {
+              if (ui.newTab.context.hash == '#questions') {
+                enableInlineEditorForChrome();
+              }
+            }
+    );
+
+    var enableInlineEditorForChrome = function () {
+      for (var i in CKEDITOR.instances) {
+        var editor = CKEDITOR.instances[i];
+        editor.setReadOnly(false);
+      }
+    }
+  });
+

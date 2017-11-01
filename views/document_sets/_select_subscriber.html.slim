@@ -1,0 +1,61 @@
+.row.collapse
+  label for="user_id"
+    | Subscriber Name or Employee ID
+  .large-9.columns
+    select#user_id name='user_id'
+      - if @user
+        option value='"#{@user.id}"' selected='selected'
+          = @user.name
+    .subscriber-tip
+      |  Start typing Employee ID number or first and last name of the subscriber.
+      |  System will prompt full name when it matches exactly one user.
+  .large-3.columns
+    button.postfix.secondary type="submit"
+      i.fi-magnifying-glass
+
+
+
+- content_for :javascripts
+  javascript:
+    (function ($) {
+      $("#user_id").select2({
+        placeholder: {
+          id: '-1', // the value of the option
+          text: 'First and Last name or Employee ID'
+        },
+        allowClear: true,
+        ajax: {
+          url: "/find_subscriber",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              name: params.term, // search term
+            };
+          },
+          processResults: function (data, params) {
+              return {
+                results: [data]
+              };
+          },
+          cache: true
+        },
+        escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+        minimumInputLength: 1,
+        templateResult: formatSubscriber,
+        templateSelection: formatSubscriberSelection
+      });
+      
+      $("#user_id").on("change", function (e) { $('#search-form').submit(); });
+
+      function formatSubscriber (subscriber) {
+        if (subscriber.loading) return subscriber.text;
+
+        return subscriber.name;
+      };
+
+
+      function formatSubscriberSelection (subscriber) {
+        return subscriber.name || subscriber.text;
+      }
+    })(jQuery);

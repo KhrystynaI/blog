@@ -1,0 +1,69 @@
+$ops-font-size: 0.7rem;
+$ops-line-height: 0.8rem;
+
+.ops {
+  width: 230mm;
+  margin: auto;
+  > table {
+    border: 1px solid $jumbo;
+    cellspacing: 0;
+    border-collapse: collapse;
+    margin: auto;
+
+    tr {
+      th, td {
+        font-size: $ops-font-size;
+        padding: 0.3rem;
+        vertical-align: middle;
+        border: 1px solid $jumbo;
+        ul, li, ol, dl, p {
+          margin-bottom: 0;
+          font-size: $ops-font-size;
+          line-height: $ops-line-height;
+        }
+      }
+    }
+    .blue-bg {
+      background: #5CACEE;
+    }
+    .grey-bg {
+      background: $gainsboro;
+      th {
+        background: $gainsboro;
+      }
+    }
+    .light-grey-bg {
+      background: #E6E6FA;
+      th {
+        background: #E6E6FA;
+      }
+    }
+    tr.light-grey-bg:nth-of-type(even) {
+      background: #E6E6FA;
+      th {
+        background: #E6E6FA;
+      }
+    }
+    .center {
+      text-align: center;
+    }
+
+    .questions {
+      width: 20%;
+      min-width: 40mm;
+      max-width: 40mm;
+    }
+    .answers {
+      width: 40%;
+      min-width: 95mm;
+      max-width: 95mm;
+    }
+    .original_text {
+      width: 40%;
+      min-width: 95mm;
+      max-width: 95mm;
+    }
+    .actions {
+    }
+  }
+}

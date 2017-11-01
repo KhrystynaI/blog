@@ -1,0 +1,43 @@
+.row
+  h5 Search
+  blockquote.simple
+    cite
+      | To check Terms for an existing subscription, enter the user's name in the search field
+      |  to search for the One Page Summary and any other documents relating to all publications the user is subscribed to.
+      |  If the user does not already have a subscription, enter the name of the publication in the Title of Publication search field
+      |  to search for any existing One Page Summary for that publication.
+    cite
+      | Note: Terms are specific to a contract so a generic One Page Summary may not be appropriate for your use.
+      |  Use the New Request button to contact us to check.
+
+  = simple_form_for search_path, method: :get, html: {id: 'search-form'} do |f|
+    .large-5.columns
+      .row
+        = render partial: 'select_subscriber'
+    .large-5.columns
+      .row
+        label for="search-input"
+          | Title of publication
+      .row.collapse
+        .large-9.columns
+          input#search-input.search-input placeholder="" type="search" name="q" value="#{params[:q]}"/
+          = render 'search/search_tips'
+        .large-3.columns
+          button.postfix.secondary type="submit"
+            i.fi-magnifying-glass
+
+.row
+  hr
+  - if (@query.present? || @user_id)
+    - if @search_results.empty?
+      .panel.callout
+        | No results found.
+    - else
+      .entry-content
+        |Found #{@search_results.total_count} result(s).
+      - @search_results.with_details.each do |document_set, details|
+        = render partial: 'document_set', locals: {document_set: document_set,
+                                                   details: details,
+                                                   user_id: @user_id}
+      p
+        = paginate @search_results

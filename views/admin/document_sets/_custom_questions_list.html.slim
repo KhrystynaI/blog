@@ -1,0 +1,53 @@
+//deprecated
+tr
+  td.question-document-title span=4
+    | Custom questions
+  - questions_categories = groupify_questions_for_list(document_set.questions.where(custom: true))
+  - questions_categories.each do | questions_category |
+    - if questions_category[0]
+      tr
+        td.question-category-title span=4
+          =questions_category[0].name
+    - else
+      tr
+        td.question-category-title span=4
+          ="No Category"
+    - questions_category[1].each do | question |
+      tr id="question_#{question.id.to_s}"
+        - question_link = QuestionLink.find_by(subject: document_set, :question => question)
+        td.question-text
+          = question.text
+        td.question-answer
+          = question_link.answer
+        td.question-original_text
+          = question_link.original_text
+        td.question-customer_question
+
+        td
+          = link_to 'Edit answer', '#', :class => "edit_link_#{question_link.id} member_link"
+          = link_to 'Delete', admin_question_link_path(question_link),
+                    :method => :delete, :class => 'delete_link member_link',
+                    data: { confirm: 'Are you sure you want to delete this?' }
+
+          .reveal-modal.tiny aria-hidden="true" aria-labelledby="modalTitle" role="dialog" id="edit-answer_#{question_link.id}-dialog" data-reveal=true
+            h4 Editing Question
+            h5 = question.text
+
+            =form_for([:admin, question_link]) do |f|
+              p
+                | Answer:
+                =f.text_area :answer, rows: 2, :autofocus => true, class:"textarea-answers"
+                br/
+                | Original text:
+                =f.text_area :original_text, rows: 4, class: "textarea-answers"
+              br/
+              =f.submit 'Save answer', class: "just-close-modal"
+            a.close-reveal-modal aria-label="Close" &#215;
+          javascript:
+            $(document).ready(function () {
+              var class_edit_link = ".edit_link_#{question_link.id}";
+              $(class_edit_link).click(function () {
+                var id_dialog = "#edit-answer_#{question_link.id}-dialog";
+                $(id_dialog).foundation("reveal", "open");
+              });
+            });

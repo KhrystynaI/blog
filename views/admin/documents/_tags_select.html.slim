@@ -1,0 +1,23 @@
+li#tag_list_input class="select input optional"
+  label.label for="tag_list" style="width:20%" Tag list
+  select class="tag-select" id="tag_list" multiple="multiple" style="width:calc(80% - 22px)"
+  input#tags-string type="hidden" name="document[tag_list]"
+
+javascript:
+  var tagData = #{tags.to_json.html_safe};
+  var selectedTags = #{selected_tags.to_json.html_safe};
+
+  $(".tag-select").select2({
+    placeholder: "Select tags",
+    data: tagData,
+    tags: true,
+    tokenSeparators: [',']
+  });
+
+  $(document).ready(function () {
+    $(".tag-select").val(selectedTags).trigger("change");
+
+    $("#document_submit_action>input").click(function () {
+      document.getElementById('tags-string').value = $(".tag-select").val();
+    });
+  });

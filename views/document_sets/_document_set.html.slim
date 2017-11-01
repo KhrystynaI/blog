@@ -1,0 +1,21 @@
+.search-result
+  .h4
+    = link_to document_set.title,
+              preview_path(customer: document_set.customer,
+              id: document_set.id,
+              user_id: user_id),
+              :target => "_blank"
+    /TODO test this case
+    -if document_set.pdf
+      |&nbsp;|&nbsp;
+      =link_to '',
+                 attachment_url(document_set.pdf, :file),
+                 class: 'pdf_link fi-page-pdf', :target => "_blank"
+  .info
+    - if @user_id
+      |Expiry date: #{document_set.expiry_date_for(@user_id)}
+  -if details[:highlight]
+    .text
+      =details[:highlight][:documents].to_s.html_safe
+      =details[:highlight][:questions].to_s.html_safe
+      =details[:highlight][:answers].to_s.html_safe

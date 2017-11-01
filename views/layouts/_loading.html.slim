@@ -1,0 +1,11 @@
+/[if lt IE 9]
+  .page-loading
+
+- content_for :javascripts
+  /[if lt IE 9]
+    javascript:
+      $(window).load(function() {
+        setTimeout(function(){
+          $(".page-loading").fadeOut("fast");
+        });
+      });

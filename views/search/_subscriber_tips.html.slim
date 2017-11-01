@@ -1,0 +1,23 @@
+a.subscriber-tip href='#' class='small' Subscriber Help
+
+#subscriber-tip-dialog.reveal-modal.medium aria-hidden='true' aria-labelledby='modalTitle' role='dialog' data-reveal=true
+  a.close-reveal-modal aria-label="Close"  ×
+
+  h4 How to select a Subscriber
+  ul
+    li Start typing first and last name of the subscriber;
+    li System will prompt full name when it matches exactly one user;
+    li If there are no matching or there are more than one user matching - system will not prompt to select the user.
+
+  h4 Search results
+  ul
+    li If there is a Subscriber selected, system will perform search only within documents user is subscribed to;
+    li If there is no Subscriber selected, system will perform search within all documents;
+
+javascript:
+  $(document).ready(function () {
+    $(".subscriber-tip").click(function () {
+      $("#subscriber-tip-dialog").foundation('reveal', 'open');
+      return false;
+    });
+  });

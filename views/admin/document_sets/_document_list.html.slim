@@ -1,0 +1,21 @@
+table border="0" cellpadding="0" cellspacing="0"
+  thead
+    tr
+      th.col.col-state_text State
+      th.col.col-type_text Type
+      th.col.col-title_text Title
+      th.col.col-actions Actions
+  tbody
+    - documents.each do | document |
+      tr
+        td.document-state
+          =document.state
+        td.document-type
+          =document.document_type.try(:title)
+        td.document-title
+          =link_to document.display_title, edit_admin_document_path(document), :class => 'edit_link member_link'
+        td
+          - document_link = DocumentLink.find_by(document_set: resource, document: document)
+          = link_to 'Remove', admin_document_link_path(document_link),
+                    :method => :delete, :class => 'delete_link member_link',
+                    data: { confirm: 'Are you sure you want to remove this?' } if editor_policy.update?

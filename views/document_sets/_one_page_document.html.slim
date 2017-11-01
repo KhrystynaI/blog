@@ -1,0 +1,8 @@
+- if @document_set.pdf
+  object data="#{attachment_url(@document_set.pdf, :file)}" height="50%" style=("height: 1000px;") type="application/pdf" width="100%"
+    p
+      | It appears you don't have a PDF plugin for this browser.
+      | No biggie... you can
+      a href="#{attachment_url(@document_set.pdf, :file)}"
+        | click here to
+        | download the PDF file.s

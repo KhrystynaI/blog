@@ -1,0 +1,10 @@
+<ul class="breadcrumbs">
+  <li><%= link_to 'Home', root_path%></li>
+  <li><%= link_to 'Documents', all_documents_list_path%></li>
+  <%- if params[:customer]%>
+    <li><%= link_to params[:customer].capitalize, document_list_path(params[:customer])%></li>
+  <%-end%>
+  <%- if params[:id]%>
+    <li class="current"><%= link_to params[:id], '#'%></li>
+  <%-end%>
+</ul>

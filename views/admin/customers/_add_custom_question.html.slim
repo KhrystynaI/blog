@@ -1,0 +1,44 @@
+button class="add-custom-questions-button" Add Custom Question
+
+#custom-questions-dialog.reveal-modal.medium aria-hidden="true" aria-labelledby="modalTitle" role="dialog" data-reveal=true
+  h4 Enter Custom Question to add
+
+  =semantic_form_for 'question_links', remote: true do |f|
+    =f.inputs do
+      -f.input :text
+      -f.input :category_id, label: 'Category',
+               as: :select, collection: QuestionCategory.collection.invert,
+               required: false
+    =f.actions do
+      a.button.save  Add Question
+      a.close-reveal-modal aria-label="Close"  ×
+
+javascript:
+  $(document).ready(function () {
+    $(".add-custom-questions-button").click(function () {
+      $("#custom-questions-dialog").foundation("reveal", "open");
+    });
+
+    $('.button.save').click(function () {
+      $(this).parent().foundation('reveal', 'close');
+      var text = document.getElementById('question_links_text').value;
+      var category_id = document.getElementById('question_links_category_id').value;
+
+      var send_data = JSON.stringify({question: {text: text, category_id: category_id}});
+      jQuery.ajax({
+        type: "POST",
+        url: "#{add_custom_question_admin_customer_path(customer).to_s}",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        data: send_data,
+        traditional: true,
+        success: function (data) {
+          window.location.href = "#{edit_admin_customer_path(customer).to_s}#questions";
+          location.reload();
+          document.getElementById('question_links_text').value = '';
+          document.getElementById('question_links_category_id').value = '';
+        }
+      });
+    });
+  });
+

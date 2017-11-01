@@ -1,0 +1,32 @@
+// SASS variable overrides must be declared before loading up Active Admin's styles.
+//
+// To view the variables that Active Admin provides, take a look at
+// `app/assets/stylesheets/active_admin/mixins/_variables.css.scss` in the
+// Active Admin source.
+//
+// For example, to change the sidebar width:
+// $sidebar-width: 242px;
+
+// Active Admin's got SASS!
+//= require select2
+//= require ui.fancytree
+//= require jsgrid/jsgrid.min
+//= require jsgrid/jsgrid-theme.min
+//= require font-awesome
+
+@import "active_admin_foundation_and_overrides";
+
+@import "active_admin/mixins";
+@import "active_admin/base";
+
+@import "wigu/active_admin_theme";
+
+@import 'active_admin/**/*';
+
+@import 'overrides/**/*';
+@import 'components/ops';
+// Overriding any non-variable SASS must be done after the fact.
+// For example, to change the default status-tag color:
+//
+//   .status_tag { background: #6090DB; }
+

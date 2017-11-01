@@ -1,0 +1,129 @@
+button data-reveal-id="new-document-dialog" Add Document(s)
+
+.reveal-modal.medium aria-hidden="true" aria-labelledby="modalTitle" role="dialog" id="new-document-dialog" data-reveal=true
+  a.close-reveal-modal aria-label="Close"  ×
+
+  h2 Add Documents to the Document Set
+  h4
+    | Check document(s) to be added and click Add.
+  .hint
+    | In order to find another Document: type ID, Version or Title into the filtering fields and press Enter.
+  .body
+    .select_documents_grid
+  .actions
+    button#choose_documents Add
+
+javascript:
+  $(function () {
+    $("#new-document-dialog .select_documents_grid").jsGrid({
+      height: "320px",
+      width: "100%",
+      filtering: true,
+      inserting: false,
+      editing: false,
+      sorting: true,
+      paging: true,
+      pageLoading: true,
+      autoload: false,
+      noDataContent: 'No results found. Try to change the filter.',
+      pageSize: 6,
+      pageButtonCount: 5,
+      onInit: function (args) {
+        gridInstance = args.grid;
+        $($(".select_documents_grid .jsgrid-filter-row td input").first()).val('#{@document_set.doc_id}');
+      },
+      controller: {
+        loadData: function (filter) {
+          selectedItems = [];
+          $("#choose_documents").prop("disabled", true);
+          return $.ajax({
+            type: "GET",
+            url: "#{selection_list_admin_documents_url(resource)}",
+            data: filter
+          });
+        }
+      },
+      fields: [
+        {
+          itemTemplate: function (_, item) {
+            return $("<input>").attr("type", "checkbox")
+                    .prop("checked", $.inArray(item, selectedItems) > -1)
+                    .on("change", function () {
+                      $(this).is(":checked") ? selectItem(item) : unselectItem(item);
+                    });
+          },
+          align: "center",
+          width: 50
+        },
+        {name: "doc_id", type: "text", width: 70, title: 'Doc ID (exact)'},
+        {name: "version", type: "text", width: 70, title: 'Version'},
+        {name: "title", type: "text", width: 250, title: 'Title or ID (partial)'},
+        {name: "doc_type", width: 250, title: 'Type'},
+        {type: "control", width: 70, editButton: false, deleteButton: false, modeSwitchButton: false }
+      ]
+    });
+
+    $("#choose_documents").on("click", function () {
+      chooseSelectedItems();
+    });
+
+    var selectedItems = [];
+
+    var selectItem = function (item) {
+      selectedItems.push(item);
+      $("#choose_documents").prop("disabled", false);
+    };
+
+    var unselectItem = function (item) {
+      selectedItems = $.grep(selectedItems, function (i) {
+        return i !== item;
+      });
+      if (selectedItems.length == 0){
+        $("#choose_documents").prop("disabled", true);
+      }
+    };
+
+    var chooseSelectedItems = function () {
+      if (!selectedItems.length) {
+        alert('Please check at least one Document.')
+        return;
+      }
+
+      var doc_ids = $.map(selectedItems, function (doc) {
+        return doc.id;
+      });
+
+      $('#document_link_document_id').val(doc_ids);
+      $('#new_document_link').submit();
+
+      var send_data = JSON.stringify({document_ids: doc_ids});
+      jQuery.ajax({
+        type: "POST",
+        url: "#{add_documents_admin_document_set_path(resource.id)}",
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        data: send_data,
+        traditional: true,
+        success: function (data) {
+          $('#new-document-dialog').foundation('reveal', 'close');
+          ActiveAdmin.flash.notice('Document(s) added to the Socument Set.')
+          location.reload();
+        },
+        error: function (xhr, status, errorThrown) {
+          $('#new-document-dialog').foundation('reveal', 'close');
+          ActiveAdmin.flash.error('Sorry. Something went wrong.');
+          location.reload();
+        }
+      });
+    };
+
+    $(document).on('opened.fndtn.reveal', '#new-document-dialog', function () {
+      $($("#new-document-dialog .select_documents_grid .jsgrid-filter-row td input")
+              .first()).val('#{@document_set.doc_id}');
+
+      $("#new-document-dialog .select_documents_grid")
+              .jsGrid("search", {doc_id: '#{@document_set.doc_id}'});
+    });
+
+  });
+

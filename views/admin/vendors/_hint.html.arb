@@ -1,0 +1,34 @@
+div do
+  h3 'Vendor Information'
+end
+table do
+  tr do
+    td "Name: #{vendor.name}"
+    td "Company: #{vendor.parent_company}"
+  end
+  tr do
+    td(colspan: 2) { "Location: #{vendor.location}" }
+  end
+  tr do
+    td(colspan: 2) do
+      span 'T&C source: '
+      if vendor.terms_source.present? && vendor.terms_link.present?
+        span link_to(vendor.terms_source, vendor.terms_link, target: '_blank')
+      elsif vendor.terms_link.present?
+        span link_to(vendor.terms_link, vendor.terms_link, target: '_blank')
+      else
+        text_node vendor.terms_source
+      end
+    end
+  end
+  tr do
+    td(colspan: 2) do
+      div 'Notes:'
+      div(class: 'notes') { vendor.notes }
+    end
+  end
+end
+
+columns do
+  link_to 'Edit Vendor', edit_admin_vendor_path(vendor), target: '_blank'
+end

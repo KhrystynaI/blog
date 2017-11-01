@@ -1,0 +1,2 @@
+<% require 'ui/components/ribbon' %>
+<%= UI::Components::Ribbon.new(label: "#{CGI.escapeHTML ENV['LANDSCAPE'].to_s.humanize} server").pdf.html_safe %>

@@ -1,0 +1,31 @@
+button data-reveal-id="universal-questions-dialog" Add Standard Questions
+
+#universal-questions-dialog.reveal-modal.medium aria-hidden="true" aria-labelledby="modalTitle" data-reveal="" role="dialog"
+  a.close-reveal-modal aria-label="Close"  ×
+  - if tree_data.any?
+    h2 Select Standard Questions to add
+    = render 'admin/document_sets/questions/add_questions_categories_tree'
+    a.button.cc-close-reveal-modal  Add Questions
+  - else
+    h4 No questions to add. It looks like all standard questions have been added.
+
+javascript:
+  var treeData = #{tree_data.to_json.html_safe};
+  $('a.cc-close-reveal-modal').click(function () {
+    $(this).parent().foundation('reveal', 'close');
+    var tree = $("#treetable").fancytree("getTree");
+    var d = tree.toDict(true);
+    var send_data = JSON.stringify({ id: #{customer.id}, tree_data: d});
+    jQuery.ajax({
+      type: "POST",
+      url: "#{add_universal_questions_admin_customer_path(customer).to_s}",
+      dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      data: send_data,
+      traditional: true,
+      success: function (data) {
+        window.location.href = "#{edit_admin_customer_path(customer).to_s}#questions";
+        location.reload();
+      }
+    });
+  });
